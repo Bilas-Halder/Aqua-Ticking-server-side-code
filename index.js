@@ -39,6 +39,12 @@ async function run() {
             res.json(watch);
         });
 
+        app.get('/users', async (req, res) => {
+            const cursor = userCollection.find({});
+            const users = await cursor.toArray();
+            res.json(users);
+        });
+
         app.get('/users/role/:email', async (req, res) => {
             const email = req.params?.email;
             const query = { email: email };
@@ -70,6 +76,12 @@ async function run() {
             res.json(newOrder);
         });
 
+        app.post('/watches', async (req, res) => {
+            const watch = req.body;
+            const result = await watchCollection.insertOne(watch);
+            res.json(watch);
+        })
+
 
         // updating users
         app.put('/users', async (req, res) => {
@@ -100,11 +112,33 @@ async function run() {
             res.json(result);
         })
 
+        app.put('/makeAdmin/:email', async (req, res) => {
+            const email = req.params?.email;
+            const query = { email: email };
+            console.log(query);
+            const updateDoc = {
+                $set: {
+                    role: "admin"
+                }
+            };
+            const result = await userCollection.updateMany(query, updateDoc);
+            console.log(result);
+            res.json(result);
+        })
+
         // DELETE API
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params?.id;
             const query = { _id: ObjectID(id) };
             const result = await orderCollection.deleteOne(query);
+            res.json(result);
+        })
+
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params?.id;
+            const query = { _id: ObjectID(id) };
+            console.log(query);
+            const result = await watchCollection.deleteOne(query);
             res.json(result);
         })
 
