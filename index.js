@@ -49,7 +49,6 @@ async function run() {
         app.get('/reviews', async (req, res) => {
             const cursor = reviewCollection.find({});
             const reviews = await cursor.toArray();
-            console.log(reviews);
             res.json(reviews);
         });
 
@@ -128,14 +127,12 @@ async function run() {
         app.put('/makeAdmin/:email', async (req, res) => {
             const email = req.params?.email;
             const query = { email: email };
-            console.log(query);
             const updateDoc = {
                 $set: {
                     role: "admin"
                 }
             };
             const result = await userCollection.updateMany(query, updateDoc);
-            console.log(result);
             res.json(result);
         })
 
@@ -150,7 +147,6 @@ async function run() {
         app.delete('/product/:id', async (req, res) => {
             const id = req.params?.id;
             const query = { _id: ObjectID(id) };
-            console.log(query);
             const result = await watchCollection.deleteOne(query);
             res.json(result);
         })
