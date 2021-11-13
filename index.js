@@ -46,6 +46,23 @@ async function run() {
             res.json({ role: user?.role });
         });
 
+        // get all orders
+        app.get('/getOrders', async (req, res) => {
+            const cursor = orderCollection.find({});
+            const orders = await cursor.toArray();
+            res.json(orders);
+        });
+        // get orders using email
+        app.get('/getOrders/:email', async (req, res) => {
+            const email = req.params?.email;
+            const query = { email: email };
+
+            const cursor = orderCollection.find(query);
+            const orders = await cursor.toArray();
+            res.json(orders);
+        });
+
+
         // post Api
         app.post('/buyone', async (req, res) => {
             const newOrder = req.body;
@@ -58,18 +75,38 @@ async function run() {
         app.put('/users', async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
+            const { role, ...rest } = user;
 
             const update = {
                 "$set": {
-                    ...user
+                    ...rest
                 }
             };
             const options = { "upsert": true };
-
-            console.log(user.email, "times");
             const result = await userCollection.updateOne(query, update, options);
             res.json(user);
         });
+        // updating shipped status
+        app.put('/allOrders/shipped/:id', async (req, res) => {
+            const id = req.params?.id;
+            const query = { _id: ObjectID(id) };
+
+            const updateDoc = {
+                $set: {
+                    status: "Shipped"
+                }
+            };
+            const result = await orderCollection.updateOne(query, updateDoc)
+            res.json(result);
+        })
+
+        // DELETE API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params?.id;
+            const query = { _id: ObjectID(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
+        })
 
 
 
