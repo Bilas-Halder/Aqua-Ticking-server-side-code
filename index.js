@@ -25,6 +25,7 @@ async function run() {
         const watchCollection = database.collection("watches");
         const orderCollection = database.collection("orders");
         const userCollection = database.collection("users");
+        const reviewCollection = database.collection("reviews");
 
         // Get API
         app.get('/watches', async (req, res) => {
@@ -43,6 +44,13 @@ async function run() {
             const cursor = userCollection.find({});
             const users = await cursor.toArray();
             res.json(users);
+        });
+
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const reviews = await cursor.toArray();
+            console.log(reviews);
+            res.json(reviews);
         });
 
         app.get('/users/role/:email', async (req, res) => {
@@ -74,6 +82,11 @@ async function run() {
             const newOrder = req.body;
             const result = await orderCollection.insertOne(newOrder);
             res.json(newOrder);
+        });
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.json(review);
         });
 
         app.post('/watches', async (req, res) => {
